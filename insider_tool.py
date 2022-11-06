@@ -16,16 +16,12 @@ def hello(name: str):
 
 
 @app.command()
-def goodbye(name: str, formal: bool = False):
-    if formal:
-        print(f"Goodbye Ms. {name}. Have a good day.")
+def show_table(ticker: str, style: str = 'normal', save: bool = False):
+    data = get_data(create_url(ticker))
+    if save:
+        data.to_csv('./data/tmp.csv', index=False)
     else:
-        print(f"Bye {name}!")
-
-
-@app.command()
-def show_table(ticker: str, style: str = 'normal'):
-    show_dataframe(get_data(create_url(ticker)), style)
+        show_dataframe(data, style)
 
 
 if __name__ == '__main__':
