@@ -1,10 +1,7 @@
 from bs4 import BeautifulSoup as bs
 import requests
 import pandas as pd
-
-from src.utils.color_utils import get_colored_text
-from src.utils.url_utils import create_url
-from src.visualization.terminal_viz import show_dataframe
+import yfinance as yf
 
 
 def get_data(url: str) -> pd.DataFrame:
@@ -31,8 +28,7 @@ def get_data(url: str) -> pd.DataFrame:
             new_df = pd.DataFrame([dict(zip(new_columns, new_row))])
             dataframe = pd.concat([dataframe, new_df], ignore_index=True)
 
+    ticker_info = yf.Ticker(dataframe.iloc[0]['Ticker'])
+    dataframe.name = f'{ticker_info.info["shortName"]} insider trades.'
+
     return dataframe
-
-
-if __name__ == '__main__':
-    show_dataframe(get_data(create_url('AAPL')).head())

@@ -24,8 +24,8 @@ def goodbye(name: str, formal: bool = False):
 
 
 @app.command()
-def show_table(ticker: str):
-    show_dataframe(get_data(create_url(ticker)), 'short')
+def show_table(ticker: str, style: str = 'normal'):
+    show_dataframe(get_data(create_url(ticker)), style)
 
 
 if __name__ == '__main__':
