@@ -10,9 +10,6 @@ def get_data(url: str) -> pd.DataFrame:
 
     r = requests.get(url=url, headers=headers)
 
-    # with open('out.html', 'r') as f:
-    #     out = f.read()
-
     soup = bs(r.content, "html5lib")
     table = soup.find("table", {'class': "tinytable"})
 
