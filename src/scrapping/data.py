@@ -28,6 +28,7 @@ def get_data(url: str) -> pd.DataFrame:
             new_df = pd.DataFrame([dict(zip(new_columns, new_row))])
             dataframe = pd.concat([dataframe, new_df], ignore_index=True)
 
+    # TODO sprawdzenie czy ten ticker na pewno istnieje
     ticker_info = yf.Ticker(dataframe.iloc[0]['Ticker'])
     dataframe.name = f'{ticker_info.info["shortName"]} insider trades.'
 
