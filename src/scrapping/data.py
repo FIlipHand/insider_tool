@@ -12,6 +12,8 @@ def get_data(url: str) -> pd.DataFrame:
 
     soup = bs(r.content, "html5lib")
     table = soup.find("table", {'class': "tinytable"})
+    if table is None:
+        return pd.DataFrame()
 
     new_columns = [i.text.strip().replace(u'\xa0', u' ') for i in table.thead.find_all('h3')]
     dataframe = pd.DataFrame(columns=new_columns)

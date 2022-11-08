@@ -8,17 +8,17 @@ def return_table(dataframe: pd.DataFrame, table_format):
     table = Table(title=f'{dataframe.name}', box=box.ROUNDED)
 
     if table_format == 'short':
-        dataframe.drop(
-            columns=['X', 'Filing Date', 'Ticker', 'Insider Name', 'Title', 'Owned', 'ΔOwn', '1d', '1w', '1m', '6m'],
-            inplace=True)
+        new_dataframe = dataframe.drop(
+            columns=['X', 'Filing Date', 'Ticker', 'Insider Name', 'Title', 'Owned', 'ΔOwn', '1d', '1w', '1m', '6m'])
     elif table_format == 'normal':
-        dataframe.drop(columns=['X', '1d', '1w', '1m', '6m'], inplace=True)
+        new_dataframe = dataframe.drop(columns=['X', '1d', '1w', '1m', '6m'])
+    else:
+        new_dataframe = dataframe
 
-    for column in dataframe.columns:
+    for column in new_dataframe.columns:
         table.add_column(column)
 
-    # TODO kolorki będą ogarnięte obiecuje...
-    colored_df = dataframe.apply(lambda row: color_row(row), axis=1)
-    for row in colored_df.itertuples():
+    new_dataframe.apply(lambda row: color_row(row), axis=1)
+    for row in new_dataframe.itertuples():
         table.add_row(*[str(i) if i else '---' for i in row][1:])
     return table
