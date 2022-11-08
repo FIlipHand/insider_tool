@@ -1,16 +1,30 @@
 import datetime
-from typing import List
+from typing import List, Union
 
 from src.utils.choise_utils import TitleChoice
 
 
 def create_url(ticker: str = '', start_date: datetime.date = None, end_date: datetime.date = None,
-               sh_price_min: float = 0.0, sh_price_max: float = 0.0, insider_name: str = '', insider_title: list = None,
-               sale: bool = False, purchase: bool = False) -> str:
-    if sh_price_max == 0.0:
+               sh_price_min: float = None, sh_price_max: float = None, insider_name: str = '',
+               insider_title: list = None, sale: bool = False, purchase: bool = False, volume_min: int = None,
+               volume_max: int = None, days_ago: str = None) -> str:
+    # it is probably not most elegant way of doing it, but if argument is None we have to change it to empty string
+    # in order to properly insert it into final link
+    if sh_price_max is None:
         sh_price_max = ''
-    if sh_price_min == 0.0:
+    if sh_price_min is None:
         sh_price_min = ''
+    if days_ago is None:
+        days_ago = ''
+    if days_ago.isnumeric():
+        days_ago = int(days_ago)
+    else:
+        units = {'d': 1, 'w': 7, 'm': 30, 'y': 365}
+        unit = days_ago[-1]
+        days_ago = int(days_ago[:-1]) * units[unit.lower()]
+
+    volume_min = '' if volume_min is None else int(volume_min / 1000)
+    volume_max = '' if volume_max is None else int(volume_max / 1000)
 
     fd_flag = 0
     date_range = ''
@@ -33,9 +47,8 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
     title_str = create_insider_title_str(insider_title)
 
     url = f"http://openinsider.com/screener?s={ticker}&o={insider_name.replace(' ', '+')}&pl={sh_price_min}&ph={sh_price_max}&" \
-          f"ll=&lh=&fd={fd_flag}&fdr={date_range}&td=0&tdr=&fdlyl=&fdlyh=&daysago=&xp={int(purchase)}&xs={int(sale)}&" \
-          f"vl=&vh=&ocl=&och=&sic1=-1&sicl=100&sich=9999&{title_str}grp=0&nfl=&nfh=&nil=&nih=&nol=&noh=&v2l=&v2h=&" \
-          f"oc2l=&oc2h=&sortcol=0&cnt=100&page=1"
+          f"ll=&lh=&fd={fd_flag}&fdr={date_range}&td={days_ago}&tdr=&fdlyl=&fdlyh=&daysago=&xp={int(purchase)}&xs={int(sale)}&" \
+          f"vl={volume_min}&vh={volume_max}&ocl=&och=&sic1=-1&sicl=100&sich=9999&{title_str}grp=0&nfl=&nfh=&nil=&nih=&nol=&noh=&v2l=&v2h=&oc2l=&oc2h=&sortcol=0&cnt=100&page=1"
     return url
 
 

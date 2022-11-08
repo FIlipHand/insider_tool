@@ -1,7 +1,7 @@
 import sys
 import os
 import typer
-from typing import List
+from typing import List, Union
 from datetime import datetime
 from rich.console import Console
 from src.visualization.terminal_viz import return_table
@@ -31,13 +31,24 @@ def common(
     pass
 
 
+# TODO
+#  2. dodać chown min i max
+#  3. dodać ile do od dzisiaj
+
 @app.command()
-def get_ticker(ticker: str, since: datetime = typer.Option(None, '--from', '-f', formats=['%d-%m-%Y']),
+def get_ticker(ticker: str,
+               since: datetime = typer.Option(None, '--from', '-f', formats=['%d-%m-%Y']),
                to: datetime = typer.Option(None, '--to', '-t', formats=['%d-%m-%Y']),
-               sh_min: float = 0.0, sh_max: float = 0.0,
-               insider_name: str = '', sale: bool = typer.Option(False, '--sale', '-s'),
+               days_ago: str = None,
+               sh_min: float = None,
+               sh_max: float = None,
+               vol_min: int = None,
+               vol_max: int = None,
+               insider_name: str = '',
+               sale: bool = typer.Option(False, '--sale', '-s'),
                insider_title: List[TitleChoice] = typer.Option([], '--title', case_sensitive=False),
-               purchase: bool = typer.Option(False, '--purchase', '-p'), style: StyleChoice = StyleChoice.normal.value,
+               purchase: bool = typer.Option(False, '--purchase', '-p'),
+               style: StyleChoice = StyleChoice.normal.value,
                save: bool = typer.Option(False, '--save')):
     if not (sale or purchase):
         raise ValueError('Please specify at least one option with --sale (-s) or --purchase (-p)')
@@ -47,7 +58,8 @@ def get_ticker(ticker: str, since: datetime = typer.Option(None, '--from', '-f',
     since = '' if since is None else since.date()
 
     url = create_url(ticker=ticker, start_date=since, end_date=to, sh_price_min=sh_min, sh_price_max=sh_max,
-                     insider_name=insider_name, insider_title=insider_title,sale=sale, purchase=purchase)
+                     insider_name=insider_name, insider_title=insider_title, sale=sale, purchase=purchase,
+                     volume_max=vol_max, volume_min=vol_min, days_ago=days_ago)
     data = get_data(url)
 
     if data.empty:
