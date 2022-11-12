@@ -1,13 +1,16 @@
 import sys
 import os
 import typer
-from typing import List, Union
+from typing import List
 from datetime import datetime
 from rich.console import Console
+
+from src.visualization.report import DataReport
 from src.visualization.terminal_viz import return_table
 from src.utils.url_utils import create_url
 from src.scrapping.data import get_data
 from src.utils.choise_utils import StyleChoice, TitleChoice
+from src.utils.data_utils import process_dataset
 
 sys.path.append(os.getcwd())
 
@@ -49,7 +52,8 @@ def get_ticker(ticker: str,
                insider_title: List[TitleChoice] = typer.Option([], '--title', case_sensitive=False),
                purchase: bool = typer.Option(False, '--purchase', '-p'),
                style: StyleChoice = StyleChoice.normal.value,
-               save: bool = typer.Option(False, '--save')):
+               save: bool = typer.Option(False, '--save'),
+               report: bool = typer.Option(False, '--report')):
     if not (sale or purchase):
         raise ValueError('Please specify at least one option with --sale (-s) or --purchase (-p)')
 
@@ -82,9 +86,14 @@ def get_ticker(ticker: str,
     else:
         console.print(table)
     if save:
+        data = process_dataset(data)
         if not os.path.exists('./data'):
             os.mkdir('./data')
         data.to_csv(f'./data/{ticker}_{since}_{to}.csv', index=False)
+
+    if report:
+        rp = DataReport(data)
+        rp.get_stock_data()
 
 
 @app.command()

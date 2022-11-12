@@ -18,12 +18,12 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
         days_ago = ''
     if days_ago.isnumeric():
         days_ago = int(days_ago)
-    else:
+    if len(days_ago) >= 2:
         units = {'d': 1, 'w': 7, 'm': 30, 'y': 365}
         unit = days_ago[-1]
         days_ago = int(days_ago[:-1]) * units[unit.lower()]
 
-    volume_min = '' if volume_min is None else int(volume_min / 1000)
+        volume_min = '' if volume_min is None else int(volume_min / 1000)
     volume_max = '' if volume_max is None else int(volume_max / 1000)
 
     fd_flag = 0
@@ -32,8 +32,8 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
     match [bool(start_date), bool(end_date)]:
         case [True, True]:
             fd_flag = -1
-            date_range = f'{start_date.day}%2F{start_date.month}%2F{start_date.year}+-+' \
-                         f'{end_date.day}%2F{end_date.month}%2F{end_date.year}'
+            date_range = f'{start_date.month}%2F{start_date.day}%2F{start_date.year}+-+' \
+                         f'{end_date.month}%2F{end_date.day}%2F{end_date.year}'
         case [True, False]:
             fd_flag = -1
             today = datetime.datetime.now().date()

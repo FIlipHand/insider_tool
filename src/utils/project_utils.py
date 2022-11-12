@@ -9,4 +9,4 @@ def get_project_root():
     str
         Application Path
     """
-    return os.getcwd().split('/src')[0] + '/'
+    return os.getcwd().split('src')[0]
