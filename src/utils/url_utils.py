@@ -18,7 +18,7 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
         days_ago = ''
     if days_ago.isnumeric():
         days_ago = int(days_ago)
-    if len(days_ago) >= 2:
+    elif len(days_ago) >= 2:
         units = {'d': 1, 'w': 7, 'm': 30, 'y': 365}
         unit = days_ago[-1]
         days_ago = int(days_ago[:-1]) * units[unit.lower()]

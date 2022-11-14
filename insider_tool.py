@@ -34,10 +34,6 @@ def common(
     pass
 
 
-# TODO
-#  2. dodać chown min i max
-#  3. dodać ile do od dzisiaj
-
 @app.command()
 def get_ticker(ticker: str,
                since: datetime = typer.Option(None, '--from', '-f', formats=['%d-%m-%Y']),
@@ -93,7 +89,7 @@ def get_ticker(ticker: str,
 
     if report:
         rp = DataReport(data)
-        rp.get_stock_data()
+        rp.generate_report()
 
 
 @app.command()
