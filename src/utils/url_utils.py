@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Union
+from typing import List
 
 from src.utils.choise_utils import TitleChoice
 
@@ -23,8 +23,9 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
         unit = days_ago[-1]
         days_ago = int(days_ago[:-1]) * units[unit.lower()]
 
-        volume_min = '' if volume_min is None else int(volume_min / 1000)
+    volume_min = '' if volume_min is None else int(volume_min / 1000)
     volume_max = '' if volume_max is None else int(volume_max / 1000)
+    insider_title = [] if insider_title is None else insider_title
 
     fd_flag = 0
     date_range = ''
@@ -46,9 +47,10 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
 
     title_str = create_insider_title_str(insider_title)
 
+    # TODO jakoś trzeba ogarnąć ilość akcji pobieranych
     url = f"http://openinsider.com/screener?s={ticker}&o={insider_name.replace(' ', '+')}&pl={sh_price_min}&ph={sh_price_max}&" \
           f"ll=&lh=&fd={fd_flag}&fdr={date_range}&td={days_ago}&tdr=&fdlyl=&fdlyh=&daysago=&xp={int(purchase)}&xs={int(sale)}&" \
-          f"vl={volume_min}&vh={volume_max}&ocl=&och=&sic1=-1&sicl=100&sich=9999&{title_str}grp=0&nfl=&nfh=&nil=&nih=&nol=&noh=&v2l=&v2h=&oc2l=&oc2h=&sortcol=0&cnt=100&page=1"
+          f"vl={volume_min}&vh={volume_max}&ocl=&och=&sic1=-1&sicl=100&sich=9999&{title_str}grp=0&nfl=&nfh=&nil=&nih=&nol=&noh=&v2l=&v2h=&oc2l=&oc2h=&sortcol=0&cnt={100}&page=1"
     return url
 
 

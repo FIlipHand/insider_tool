@@ -5,7 +5,7 @@ from typing import List
 from datetime import datetime
 from rich.console import Console
 
-from src.visualization.report import DataReport
+from src.visualization.report import TickerReport, PennyStockReport
 from src.visualization.terminal_viz import return_table
 from src.utils.url_utils import create_url
 from src.scrapping.data import get_data
@@ -88,25 +88,25 @@ def get_ticker(ticker: str,
         data.to_csv(f'./data/{ticker}_{since}_{to}.csv', index=False)
 
     if report:
-        rp = DataReport(data)
+        rp = TickerReport(data)
         rp.generate_report()
 
 
 @app.command()
-def penny_stock(style: StyleChoice = StyleChoice.normal):
-    url = 'http://openinsider.com/latest-penny-stock-buys'
+def penny_stock(style: StyleChoice = StyleChoice.normal, days_ago: str = None,
+                report: bool = False, save: bool = False):
+    url = create_url(sh_price_max=5, volume_min=25_000, purchase=True, days_ago=days_ago)
     data = get_data(url=url)
     data.name = 'Latest penny stock buys'
     console.print(return_table(data, style.value))
-
-
-@app.command()
-def cluster_buys(style: StyleChoice = StyleChoice.normal):
-    url = 'http://openinsider.com/latest-cluster-buys'
-    # TODO tutaj są inne nazwy kolumn więc jakiś handling trzeba ogarnąć
-    data = get_data(url=url)
-    data.name = 'Latest cluster buys'
-    console.print(return_table(data, style.value))
+    if save:
+        data = process_dataset(data)
+        if not os.path.exists('./data'):
+            os.mkdir('./data')
+        data.to_csv(f'./data/penny_stocks_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv', index=False)
+    if report:
+        rp = PennyStockReport(dataset=data)
+        rp.generate_report()
 
 
 if __name__ == '__main__':
