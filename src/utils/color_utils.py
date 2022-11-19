@@ -1,13 +1,13 @@
-def get_colored_text(text: str, color: str) -> str:
+def get_colored_text(text, color: str) -> str:
     assert color == 'red' or color == 'green' or color == 'yellow'
     if color == 'red':
-        out = '[red]' + text + f'[/red]'
+        out = '[red]' + str(text) + f'[/red]'
     elif color == 'green':
-        out = '[green]' + text + f'[/green]'
+        out = '[green]' + str(text) + f'[/green]'
     elif color == 'yellow':
-        out = '[yellow]' + text + f'[/yellow]'
+        out = '[yellow]' + str(text) + f'[/yellow]'
     else:
-        raise ValueError("An unknown error has occurred.")
+        out = str(text)
     return out
 
 

@@ -27,6 +27,7 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
     volume_max = '' if volume_max is None else int(volume_max / 1000)
     insider_title = [] if insider_title is None else insider_title
 
+    # Process dates
     fd_flag = 0
     date_range = ''
 
@@ -45,6 +46,7 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
         case [False, False]:
             pass
 
+    # Process insider titles
     title_str = create_insider_title_str(insider_title)
 
     # TODO jakoś trzeba ogarnąć ilość akcji pobieranych
