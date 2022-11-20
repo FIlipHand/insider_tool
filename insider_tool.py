@@ -1,7 +1,7 @@
 import sys
 import os
 import typer
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from rich.console import Console
 
@@ -36,21 +36,24 @@ def common(
 
 @app.command()
 def get(ticker: str = '',
-        since: datetime = typer.Option(None, '--from', '-f', formats=['%d-%m-%Y']),
-        to: datetime = typer.Option(None, '--to', '-t', formats=['%d-%m-%Y']),
-        days_ago: str = None,
-        sh_min: float = None,
-        sh_max: float = None,
-        vol_min: int = None,
-        vol_max: int = None,
-        insider_name: str = '',
+        since: datetime = typer.Option(None, '--from', '-f', formats=['%d-%m-%Y'], show_default=False),
+        to: datetime = typer.Option(None, '--to', '-t', formats=['%d-%m-%Y'], show_default=False),
+        days_ago: str = typer.Option(None, '--days-ago', '-d', show_default=False),
+        sh_min: float = typer.Option(None, show_default=False),
+        sh_max: float = typer.Option(None, show_default=False),
+        vol_min: int = typer.Option(None, show_default=False),
+        vol_max: int = typer.Option(None, show_default=False),
+        insider_name: str = typer.Option('', show_default=False),
         sale: bool = typer.Option(False, '--sale', '-s'),
-        insider_title: List[TitleChoice] = typer.Option([], '--title', case_sensitive=False),
         purchase: bool = typer.Option(False, '--purchase', '-p'),
-        group: bool = typer.Option(False, '--group'),
+        insider_title: List[TitleChoice] = typer.Option([], '--title', case_sensitive=False, show_default=False),
+        group: bool = typer.Option(False, '--group', '-g'),
         save: bool = typer.Option(False, '--save'),
         report: bool = typer.Option(False, '--report'),
-        style: StyleChoice = typer.Option(None, '--print')):
+        # TODO it's not perfect but gets the job done
+        # alternative -> style: StyleChoice = typer.Option(None, '--print')):
+        if_print: bool = typer.Option(False, '--print'),
+        style: StyleChoice = typer.Argument(StyleChoice.normal, hidden=True)):
     if not (sale or purchase):
         sale = True
         purchase = True
@@ -81,14 +84,14 @@ def get(ticker: str = '',
         proc_data = group_dataset(proc_data)
         proc_data.name = "Insider buys"
 
-    # if style is not None:
-    table = return_table(data if proc_data is None else proc_data, StyleChoice.normal.value)
-    print_flag = True
-    if table.row_count >= 200:
-        print_flag = typer.confirm(f"There are {table.row_count} rows to print. Are you sure you want to continue?",
-                                   default=True)
-    if print_flag:
-        console.print(table)
+    if if_print:
+        table = return_table(data if proc_data is None else proc_data, style.value)
+        print_flag = True
+        if table.row_count >= 200:
+            print_flag = typer.confirm(f"There are {table.row_count} rows to print. Are you sure you want to continue?",
+                                       default=True)
+        if print_flag:
+            console.print(table)
 
     if save:
         proc_data = process_dataset(data) if proc_data is None else proc_data
