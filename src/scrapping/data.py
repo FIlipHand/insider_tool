@@ -5,6 +5,16 @@ import yfinance as yf
 
 
 def get_data(url: str) -> pd.DataFrame:
+    """
+    Function used to parse html table from site to pd.DataFrame
+    Parameters
+    ----------
+    url - Valid URL to openinsider.com
+
+    Returns
+    -------
+    pd.DataFrame containing data
+    """
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"}
 

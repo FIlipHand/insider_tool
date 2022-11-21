@@ -29,32 +29,48 @@ def version_callback(value: bool):
 @app.callback()
 def common(
         ctx: typer.Context,
-        version: bool = typer.Option(None, '--version', '-v', callback=version_callback),
+        version: bool = typer.Option(
+            None, '--version', '-v', callback=version_callback),
 ):
     pass
 
 
 @app.command()
-def get(ticker: str = '',
-        since: datetime = typer.Option(None, '--from', '-f', formats=['%d-%m-%Y'], show_default=False),
-        to: datetime = typer.Option(None, '--to', '-t', formats=['%d-%m-%Y'], show_default=False),
-        days_ago: str = typer.Option(None, '--days-ago', '-d', show_default=False),
-        sh_min: float = typer.Option(None, show_default=False),
-        sh_max: float = typer.Option(None, show_default=False),
-        vol_min: int = typer.Option(None, show_default=False),
-        vol_max: int = typer.Option(None, show_default=False),
-        insider_name: str = typer.Option('', show_default=False),
-        sale: bool = typer.Option(False, '--sale', '-s'),
-        purchase: bool = typer.Option(False, '--purchase', '-p'),
-        insider_title: List[TitleChoice] = typer.Option([], '--title', case_sensitive=False, show_default=False),
-        group: bool = typer.Option(False, '--group', '-g'),
-        save: bool = typer.Option(False, '--save'),
-        report: bool = typer.Option(False, '--report'),
+def get(ticker: str = typer.Option('', '--ticker', rich_help_panel="General"),
+        since: datetime = typer.Option(None, '--from', '-f', formats=['%d-%m-%Y'], show_default=False,
+                                       rich_help_panel="Date"),
+        to: datetime = typer.Option(None, '--to', '-t', formats=['%d-%m-%Y'], show_default=False,
+                                    rich_help_panel="Date"),
+        days_ago: str = typer.Option(
+            None, '--days-ago', '-d', show_default=False, rich_help_panel="Date"),
+        sh_min: float = typer.Option(
+            None, show_default=False, rich_help_panel="General"),
+        sh_max: float = typer.Option(
+            None, show_default=False, rich_help_panel="General"),
+        vol_min: int = typer.Option(
+            None, show_default=False, rich_help_panel="General"),
+        vol_max: int = typer.Option(
+            None, show_default=False, rich_help_panel="General"),
+        insider_name: str = typer.Option(
+            '', show_default=False, rich_help_panel="General"),
+        sale: bool = typer.Option(
+            False, '--sale', '-s', rich_help_panel="Transaction Filing"),
+        purchase: bool = typer.Option(
+            False, '--purchase', '-p', rich_help_panel="Transaction Filing"),
+        insider_title: List[TitleChoice] = typer.Option([], '--title', case_sensitive=False, show_default=False,
+                                                        rich_help_panel="Transaction Filing"),
+        group: bool = typer.Option(
+            False, '--group', '-g', rich_help_panel="Additional options"),
+        save: bool = typer.Option(
+            False, '--save', rich_help_panel="Additional options"),
+        report: bool = typer.Option(
+            False, '--report', rich_help_panel="Additional options"),
         # TODO it's not perfect but gets the job done
         # alternative -> style: StyleChoice = typer.Option(None, '--print')):
-        if_print: bool = typer.Option(False, '--print'),
+        if_print: bool = typer.Option(
+            False, '--print', rich_help_panel="Additional options"),
         style: StyleChoice = typer.Argument(StyleChoice.normal, hidden=True),
-        sort: SortChoice = typer.Option(None, '--sort')):
+        sort: SortChoice = typer.Option(None, '--sort', rich_help_panel="Additional options")):
     if not (sale or purchase):
         sale = True
         purchase = True
@@ -95,7 +111,8 @@ def get(ticker: str = '',
             proc_data = format_dataset(proc_data)
 
     if if_print:
-        table = return_table(data if proc_data is None else proc_data, style.value)
+        table = return_table(
+            data if proc_data is None else proc_data, style.value)
         print_flag = True
         if table.row_count >= 200:
             print_flag = typer.confirm(f"There are {table.row_count} rows to print. Are you sure you want to continue?",
@@ -115,10 +132,11 @@ def get(ticker: str = '',
 
 
 @app.command()
-def penny_stock(days_ago: str = None,
-                report: bool = False, save: bool = False, group: bool = False, if_print: bool = True,
-                style: StyleChoice = typer.Argument(StyleChoice.normal, hidden=True)):
-    url = create_url(sh_price_max=5, volume_min=25_000, purchase=True, days_ago=days_ago)
+def penny_stocks(days_ago: str = None, report: bool = False, save: bool = False, group: bool = False,
+                 if_print: bool = typer.Option(False, '--print'),
+                 style: StyleChoice = typer.Argument(StyleChoice.normal, hidden=True)):
+    url = create_url(sh_price_max=5, volume_min=25_000,
+                     purchase=True, days_ago=days_ago)
     data = get_data(url=url)
     data.name = 'Latest penny stock buys'
     proc_data = None
@@ -129,7 +147,8 @@ def penny_stock(days_ago: str = None,
         proc_data.name = data.name
 
     if if_print:
-        table = return_table(data if proc_data is None else proc_data, style.value)
+        table = return_table(
+            data if proc_data is None else proc_data, style.value)
         print_flag = True
         if table.row_count >= 200:
             print_flag = typer.confirm(f"There are {table.row_count} rows to print. Are you sure you want to continue?",
@@ -144,7 +163,8 @@ def penny_stock(days_ago: str = None,
         proc_data = process_dataset(data) if proc_data is None else proc_data
         if not os.path.exists('./data'):
             os.mkdir('./data')
-        proc_data.to_csv(f'./data/penny_stocks_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv', index=False)
+        proc_data.to_csv(
+            f'./data/penny_stocks_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv', index=False)
 
 
 if __name__ == '__main__':

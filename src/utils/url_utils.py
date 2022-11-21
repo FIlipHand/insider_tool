@@ -39,10 +39,10 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
         case [True, False]:
             fd_flag = -1
             today = datetime.datetime.now().date()
-            date_range = f'{start_date.day}%2F{start_date.month}%2F{start_date.year}+-+' \
-                         f'{today.day}%2F{today.month}%2F{today.year}'
+            date_range = f'{start_date.month}%2F{start_date.day}%2F{start_date.year}+-+' \
+                         f'{today.month}%2F{today.day}%2F{today.year}'
         case [False, True]:
-            raise NotImplementedError("Jeszcze moment, nie wiem jak to zrobić!")
+            raise NotImplementedError("Jeszcze moment!")
         case [False, False]:
             pass
 
