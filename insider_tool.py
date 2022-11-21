@@ -1,7 +1,7 @@
 import sys
 import os
 import typer
-from typing import List, Optional
+from typing import List
 from datetime import datetime
 from rich.console import Console
 
@@ -9,8 +9,8 @@ from src.visualization.report import TickerReport, PennyStockReport
 from src.visualization.terminal_viz import return_table
 from src.utils.url_utils import create_url
 from src.scrapping.data import get_data
-from src.utils.choise_utils import StyleChoice, TitleChoice
-from src.utils.data_utils import process_dataset, group_dataset
+from src.utils.choise_utils import StyleChoice, TitleChoice, SortChoice
+from src.utils.data_utils import process_dataset, group_dataset, format_dataset
 
 sys.path.append(os.getcwd())
 
@@ -29,7 +29,7 @@ def version_callback(value: bool):
 @app.callback()
 def common(
         ctx: typer.Context,
-        version: bool = typer.Option(None, "--version", callback=version_callback),
+        version: bool = typer.Option(None, '--version', '-v', callback=version_callback),
 ):
     pass
 
@@ -53,7 +53,8 @@ def get(ticker: str = '',
         # TODO it's not perfect but gets the job done
         # alternative -> style: StyleChoice = typer.Option(None, '--print')):
         if_print: bool = typer.Option(False, '--print'),
-        style: StyleChoice = typer.Argument(StyleChoice.normal, hidden=True)):
+        style: StyleChoice = typer.Argument(StyleChoice.normal, hidden=True),
+        sort: SortChoice = typer.Option(None, '--sort')):
     if not (sale or purchase):
         sale = True
         purchase = True
@@ -77,12 +78,21 @@ def get(ticker: str = '',
         data_name = data.name
         data = data.loc[data['Insider Name'] == insider_name]
         data.name = data_name
-
     # Check bool flags
     if group:
-        proc_data = process_dataset(data) if proc_data is None else proc_data
+        # proc_data = process_dataset(data) if proc_data is None else proc_data
+        if proc_data is None:
+            proc_data = process_dataset(data)
         proc_data = group_dataset(proc_data)
         proc_data.name = "Insider buys"
+
+    if sort:
+        if proc_data is None:
+            proc_data = process_dataset(data)
+        # print(proc_data.head().to_string())
+        proc_data.sort_values(by=[sort.value], ascending=False, inplace=True)
+        if group:
+            proc_data = format_dataset(proc_data)
 
     if if_print:
         table = return_table(data if proc_data is None else proc_data, style.value)
@@ -105,8 +115,9 @@ def get(ticker: str = '',
 
 
 @app.command()
-def penny_stock(style: StyleChoice = StyleChoice.normal, days_ago: str = None,
-                report: bool = False, save: bool = False, group: bool = False, if_print: bool = True):
+def penny_stock(days_ago: str = None,
+                report: bool = False, save: bool = False, group: bool = False, if_print: bool = True,
+                style: StyleChoice = typer.Argument(StyleChoice.normal, hidden=True)):
     url = create_url(sh_price_max=5, volume_min=25_000, purchase=True, days_ago=days_ago)
     data = get_data(url=url)
     data.name = 'Latest penny stock buys'
@@ -118,7 +129,13 @@ def penny_stock(style: StyleChoice = StyleChoice.normal, days_ago: str = None,
         proc_data.name = data.name
 
     if if_print:
-        console.print(return_table(data if proc_data is None else proc_data, style.value))
+        table = return_table(data if proc_data is None else proc_data, style.value)
+        print_flag = True
+        if table.row_count >= 200:
+            print_flag = typer.confirm(f"There are {table.row_count} rows to print. Are you sure you want to continue?",
+                                       default=True)
+        if print_flag:
+            console.print(table)
 
     if report:
         rp = PennyStockReport(dataset=data)

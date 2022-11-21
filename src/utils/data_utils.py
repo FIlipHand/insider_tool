@@ -1,4 +1,5 @@
 import pandas as pd
+from copy import deepcopy
 
 
 def change_cell_to_number(value: str) -> int:
@@ -38,8 +39,17 @@ def group_dataset(dataset: pd.DataFrame):
                                                                 'Price': 'mean',
                                                                 'Qty': 'sum',
                                                                 'Value': 'sum'})
+    # dataset['Price'] = dataset.apply(lambda row: '${:.2f}'.format(row['Price']), axis=1)
+    # dataset['Qty'] = dataset.apply(lambda row: '{:,}'.format(row['Qty']), axis=1)
+    # dataset['Value'] = dataset.apply(
+    #     lambda row: '-${:,}'.format(abs(row['Value'])) if row['Value'] < 0 else '${:,}'.format(row['Value']), axis=1)
+    return dataset
+
+
+def format_dataset(dataset: pd.DataFrame):
     dataset['Price'] = dataset.apply(lambda row: '${:.2f}'.format(row['Price']), axis=1)
     dataset['Qty'] = dataset.apply(lambda row: '{:,}'.format(row['Qty']), axis=1)
     dataset['Value'] = dataset.apply(
         lambda row: '-${:,}'.format(abs(row['Value'])) if row['Value'] < 0 else '${:,}'.format(row['Value']), axis=1)
+
     return dataset

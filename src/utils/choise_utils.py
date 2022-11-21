@@ -19,3 +19,11 @@ class TitleChoice(str, Enum):
     Director = 'Director'
     ten_own = '10own'
     other = 'other'
+
+
+class SortChoice(str, Enum):
+    ticker = 'Ticker'
+    trade_type = 'Trade Type'
+    price = 'Price'
+    qty = 'Qty'
+    value = 'Value'
