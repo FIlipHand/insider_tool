@@ -7,7 +7,7 @@ from src.utils.choise_utils import TitleChoice
 def create_url(ticker: str = '', start_date: datetime.date = None, end_date: datetime.date = None,
                sh_price_min: float = None, sh_price_max: float = None, insider_name: str = '',
                insider_title: list = None, sale: bool = False, purchase: bool = False, volume_min: int = None,
-               volume_max: int = None, days_ago: str = None) -> str:
+               volume_max: int = None, days_ago: str = None, n: int = 1000) -> str:
     # it is probably not most elegant way of doing it, but if argument is None we have to change it to empty string
     # in order to properly insert it into final link
     if sh_price_max is None:
@@ -52,7 +52,7 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
     # TODO jakoś trzeba ogarnąć ilość akcji pobieranych
     url = f"http://openinsider.com/screener?s={ticker}&o={insider_name.replace(' ', '+')}&pl={sh_price_min}&ph={sh_price_max}&" \
           f"ll=&lh=&fd={fd_flag}&fdr={date_range}&td={days_ago}&tdr=&fdlyl=&fdlyh=&daysago=&xp={int(purchase)}&xs={int(sale)}&" \
-          f"vl={volume_min}&vh={volume_max}&ocl=&och=&sic1=-1&sicl=100&sich=9999&{title_str}grp=0&nfl=&nfh=&nil=&nih=&nol=&noh=&v2l=&v2h=&oc2l=&oc2h=&sortcol=0&cnt={100}&page=1"
+          f"vl={volume_min}&vh={volume_max}&ocl=&och=&sic1=-1&sicl=100&sich=9999&{title_str}grp=0&nfl=&nfh=&nil=&nih=&nol=&noh=&v2l=&v2h=&oc2l=&oc2h=&sortcol=0&cnt={n}&page=1"
     return url
 
 

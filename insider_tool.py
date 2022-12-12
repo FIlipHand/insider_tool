@@ -4,7 +4,7 @@ import typer
 from typing import List
 from datetime import datetime
 from rich.console import Console
-
+from src.telegram_bot.telegram_bot import refresh_and_notify
 from src.visualization.report import TickerReport, PennyStockReport
 from src.visualization.terminal_viz import return_table
 from src.utils.url_utils import create_url
@@ -160,6 +160,28 @@ def penny_stocks(days_ago: str = None, report: bool = False, save: bool = False,
             os.mkdir('./data')
         proc_data.to_csv(
             f'./data/penny_stocks_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv', index=False)
+
+
+@app.command()
+def set_up_telegram(ticker: str = typer.Option('', '--ticker', rich_help_panel="General"),
+                    sh_min: float = typer.Option(
+                        None, show_default=False, rich_help_panel="General"),
+                    sh_max: float = typer.Option(
+                        None, show_default=False, rich_help_panel="General"),
+                    vol_min: int = typer.Option(
+                        None, show_default=False, rich_help_panel="General"),
+                    vol_max: int = typer.Option(
+                        None, show_default=False, rich_help_panel="General"),
+                    sale: bool = typer.Option(
+                        False, '--sale', '-s', rich_help_panel="Transaction Filing"),
+                    purchase: bool = typer.Option(
+                        False, '--purchase', '-p', rich_help_panel="Transaction Filing"),
+                    insider_title: List[TitleChoice] = typer.Option([], '--title', case_sensitive=False,
+                                                                    show_default=False,
+                                                                    rich_help_panel="Transaction Filing")):
+    url = create_url(ticker=ticker, sh_price_max=sh_max, sh_price_min=sh_min, volume_min=vol_min, volume_max=vol_max,
+                     sale=sale, purchase=purchase, insider_title=insider_title, n=1)
+    refresh_and_notify(url)
 
 
 if __name__ == '__main__':
