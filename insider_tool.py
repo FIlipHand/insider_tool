@@ -65,8 +65,6 @@ def get(ticker: str = typer.Option('', '--ticker', rich_help_panel="General"),
             False, '--save', rich_help_panel="Additional options"),
         report: bool = typer.Option(
             False, '--report', rich_help_panel="Additional options"),
-        # TODO it's not perfect but gets the job done
-        # alternative -> style: StyleChoice = typer.Option(None, '--print')):
         if_print: bool = typer.Option(
             False, '--print', rich_help_panel="Additional options"),
         style: StyleChoice = typer.Argument(StyleChoice.normal, hidden=True),
@@ -96,7 +94,6 @@ def get(ticker: str = typer.Option('', '--ticker', rich_help_panel="General"),
         data.name = data_name
     # Check bool flags
     if group:
-        # proc_data = process_dataset(data) if proc_data is None else proc_data
         if proc_data is None:
             proc_data = process_dataset(data)
         proc_data = group_dataset(proc_data)
@@ -105,14 +102,11 @@ def get(ticker: str = typer.Option('', '--ticker', rich_help_panel="General"),
     if sort:
         if proc_data is None:
             proc_data = process_dataset(data)
-        # print(proc_data.head().to_string())
         proc_data.sort_values(by=[sort.value], ascending=False, inplace=True)
-        if group:
-            proc_data = format_dataset(proc_data)
+        # proc_data = format_dataset(proc_data)
 
     if if_print:
-        table = return_table(
-            data if proc_data is None else proc_data, style.value)
+        table = return_table(data if proc_data is None else format_dataset(proc_data), style.value)
         print_flag = True
         if table.row_count >= 200:
             print_flag = typer.confirm(f"There are {table.row_count} rows to print. Are you sure you want to continue?",
@@ -121,7 +115,8 @@ def get(ticker: str = typer.Option('', '--ticker', rich_help_panel="General"),
             console.print(table)
 
     if save:
-        proc_data = process_dataset(data) if proc_data is None else proc_data
+        if proc_data is None:
+            proc_data = process_dataset(data)
         if not os.path.exists('./data'):
             os.mkdir('./data')
         proc_data.to_csv(f'./data/{ticker}_{since}_{to}.csv', index=False)
