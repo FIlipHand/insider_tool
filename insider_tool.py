@@ -180,7 +180,7 @@ def set_up_telegram(ticker: str = typer.Option('', '--ticker', rich_help_panel="
                                                                     show_default=False,
                                                                     rich_help_panel="Transaction Filing")):
     url = create_url(ticker=ticker, sh_price_max=sh_max, sh_price_min=sh_min, volume_min=vol_min, volume_max=vol_max,
-                     sale=sale, purchase=purchase, insider_title=insider_title, n=1)
+                     sale=sale, purchase=purchase, insider_title=insider_title, days_ago='1')
     refresh_and_notify(url)
 
 

@@ -28,7 +28,7 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
     insider_title = [] if insider_title is None else insider_title
 
     # Process dates
-    fd_flag = 0
+    fd_flag = days_ago
     date_range = ''
 
     match [bool(start_date), bool(end_date)]:
@@ -51,7 +51,7 @@ def create_url(ticker: str = '', start_date: datetime.date = None, end_date: dat
 
     # TODO jakoś trzeba ogarnąć ilość akcji pobieranych
     url = f"http://openinsider.com/screener?s={ticker}&o={insider_name.replace(' ', '+')}&pl={sh_price_min}&ph={sh_price_max}&" \
-          f"ll=&lh=&fd={fd_flag}&fdr={date_range}&td={days_ago}&tdr=&fdlyl=&fdlyh=&daysago=&xp={int(purchase)}&xs={int(sale)}&" \
+          f"ll=&lh=&fd={fd_flag}&fdr={date_range}&td=&tdr=&fdlyl=&fdlyh=&daysago=&xp={int(purchase)}&xs={int(sale)}&" \
           f"vl={volume_min}&vh={volume_max}&ocl=&och=&sic1=-1&sicl=100&sich=9999&{title_str}grp=0&nfl=&nfh=&nil=&nih=&nol=&noh=&v2l=&v2h=&oc2l=&oc2h=&sortcol=0&cnt={n}&page=1"
     return url
 
