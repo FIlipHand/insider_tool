@@ -87,6 +87,7 @@ def format_dataset(dataset: pd.DataFrame):
     dataset['Qty'] = dataset.apply(lambda row: '{:,}'.format(row['Qty']), axis=1)
     dataset['Value'] = dataset.apply(
         lambda row: '-${:,}'.format(abs(row['Value'])) if row['Value'] < 0 else '${:,}'.format(row['Value']), axis=1)
-    dataset['Owned'] = dataset.apply(lambda row: '{:,}'.format(row['Owned']), axis=1)
+    if 'Owned' in list(dataset.columns):
+        dataset['Owned'] = dataset.apply(lambda row: '{:,}'.format(row['Owned']), axis=1)
 
     return dataset

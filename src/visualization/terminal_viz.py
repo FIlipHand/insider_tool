@@ -5,7 +5,8 @@ from src.utils.color_utils import color_row
 
 
 def return_table(dataframe: pd.DataFrame, table_format):
-    table = Table(title=f'{dataframe.name}', box=box.ROUNDED)
+    # table = Table(title=f'{dataframe.name}', box=box.ROUNDED)
+    table = Table(box=box.ROUNDED)
 
     # ignoring errors during dropping means that if column is absent it will be ignored
     if table_format == 'short':
