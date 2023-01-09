@@ -17,7 +17,7 @@ sys.path.append(os.getcwd())
 
 app = typer.Typer()
 
-__version__ = '0.1.0'
+__version__ = '0.5.0'
 console = Console()
 
 
@@ -37,7 +37,7 @@ def common(
 
 
 @app.command()
-def get(ticker: str = typer.Option('', '--ticker', rich_help_panel="General"),
+def get(ticker: List[str] = typer.Option([], '--ticker', '-k', rich_help_panel="General"),
         since: datetime = typer.Option(None, '--from', '-f', formats=['%d-%m-%Y'], show_default=False,
                                        rich_help_panel="Date"),
         to: datetime = typer.Option(None, '--to', '-t', formats=['%d-%m-%Y'], show_default=False,
@@ -130,20 +130,34 @@ def get(ticker: str = typer.Option('', '--ticker', rich_help_panel="General"),
             proc_data = process_dataset(data)
         if not os.path.exists('./data'):
             os.mkdir('./data')
-        proc_data.to_csv(f'./data/{ticker}_{since}_{to}.csv', index=False)
+        try:
+            name = '_'.join([ticker, since, to])
+        except TypeError:
+            name = 'data_' + datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S')
+        proc_data.to_csv(f'./data/{name}.csv', index=False)
 
     if report:
-        if ticker == '':
+        if not ticker:
             console.print('[red]ERROR: No ticker specified! [/red]')
             raise typer.Exit(code=1)
-        rp = TickerReport(data)
+        elif len(ticker) == 1:
+            rp = TickerReport(data)
+        else:
+            rp = PennyStockReport(data)
+            rp.filename = rp.filename.replace('Penny_stocks', '_'.join(ticker))
         rp.generate_report()
 
 
 @app.command()
-def penny_stocks(days_ago: str = None, report: bool = False, save: bool = False, group: bool = False,
-                 if_print: bool = typer.Option(False, '--print'),
-                 style: StyleChoice = typer.Argument(StyleChoice.normal, hidden=True)):
+def penny_stocks(days_ago: str = typer.Option(None, '--days-ago', '-d', show_default=False, rich_help_panel="Date"),
+                 report: bool = typer.Option(
+                     False, '--report', rich_help_panel="Additional options"), save: bool = False,
+                 group: bool = typer.Option(
+                     False, '--group', '-g', rich_help_panel="Additional options"),
+                 if_print: bool = typer.Option(
+                     False, '--print', rich_help_panel="Additional options"),
+                 style: StyleChoice = typer.Argument(StyleChoice.normal, hidden=True),
+                 sort: SortChoice = typer.Option(None, '--sort', rich_help_panel="Additional options")):
     url = create_url(sh_price_max=5, volume_min=25_000,
                      purchase=True, days_ago=days_ago)
     data = get_data(url=url)
@@ -151,13 +165,17 @@ def penny_stocks(days_ago: str = None, report: bool = False, save: bool = False,
     proc_data = None
 
     if group:
-        proc_data = process_dataset(data) if proc_data is None else proc_data
+        if proc_data is None:
+            proc_data = process_dataset(data)
         proc_data = group_dataset(proc_data)
         # proc_data.name = data.name
+    if sort:
+        if proc_data is None:
+            proc_data = process_dataset(data)
+        proc_data.sort_values(by=[sort.value], ascending=False, inplace=True)
 
     if if_print:
-        table = return_table(
-            data if proc_data is None else proc_data, style.value)
+        table = return_table(data if proc_data is None else format_dataset(proc_data), style.value)
         print_flag = True
         if table.row_count >= 200:
             print_flag = typer.confirm(f"There are {table.row_count} rows to print. Are you sure you want to continue?",
@@ -177,7 +195,7 @@ def penny_stocks(days_ago: str = None, report: bool = False, save: bool = False,
 
 
 @app.command()
-def set_up_telegram(ticker: str = typer.Option('', '--ticker', rich_help_panel="General"),
+def set_up_telegram(ticker: List[str] = typer.Option([], '--ticker', rich_help_panel="General"),
                     sh_min: float = typer.Option(
                         None, show_default=False, rich_help_panel="General"),
                     sh_max: float = typer.Option(
