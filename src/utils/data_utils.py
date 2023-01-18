@@ -91,3 +91,16 @@ def format_dataset(dataset: pd.DataFrame):
         dataset['Owned'] = dataset.apply(lambda row: '{:,}'.format(row['Owned']), axis=1)
 
     return dataset
+
+
+def get_data_for_prediction(row):
+    row = process_dataset(row.to_frame().T)
+    status = True
+    if row.iloc[0]['Price'] == 0.0 or '.' in row.iloc[0]['Ticker'] or 'Sale' in row.iloc[0]['Trade Type']:
+        status = False
+    row = row[['Price', 'Qty', 'Owned', 'ΔOwn', 'Value']]
+    row['ΔOwn'] = row['ΔOwn'].replace('New', '+100%')
+    row['ΔOwn'] = row['ΔOwn'].replace('>999%', '+999%')
+    row['ΔOwn'] = int(row.iloc[0]['ΔOwn'][:-1])
+
+    return row, status

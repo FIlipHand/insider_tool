@@ -85,14 +85,22 @@ def get(ticker: List[str] = typer.Option([], '--ticker', '-k', rich_help_panel="
     data = pd.DataFrame()
     page_cnt = 1
     # szkoda że nie ma do while ;_;
+    new_date = to
     while True:
-        url = create_url(ticker=ticker, start_date=since, end_date=to, sh_price_min=sh_min, sh_price_max=sh_max,
+        url = create_url(ticker=ticker, start_date=since, end_date=new_date, sh_price_min=sh_min, sh_price_max=sh_max,
                          insider_name=insider_name, insider_title=insider_title, sale=sale, purchase=purchase,
                          volume_max=vol_max, volume_min=vol_min, days_ago=days_ago, page_number=page_cnt)
         new_data = get_data(url)
         data = pd.concat([data, new_data])
+        print(page_cnt)
         if len(new_data) != 5000:
             break
+        if page_cnt == 9:
+            page_cnt = 1
+            new_date = datetime.strptime(data.iloc[-1]['Filing Date'].split(' ')[0], '%Y-%m-%d')
+            print(new_date)
+            continue
+
         page_cnt += 1
 
     if data.empty:

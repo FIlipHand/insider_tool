@@ -11,7 +11,7 @@
 
 ## Examples
 
-- Print table containing all insider trades from 01-01-2021 to 01-02-2022
+- Print table containing all insider trades from 01-01-2021 to 01-02-2022 (bad idea)
 
     - `python insider_tool.py get -f 01-01-2021 -t 01-02-2022 --print `
 
