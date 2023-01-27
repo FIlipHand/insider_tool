@@ -62,9 +62,8 @@ def group_dataset(dataset: pd.DataFrame):
     -------
     pd.DataFrame: grouped dataframe
     """
-    dataset = dataset[['Ticker', 'Company Name', 'Trade Type', 'Price', 'Qty', 'Value']]
-    dataset = dataset.groupby(by=['Ticker', 'Trade Type']).agg({'Company Name': 'first',
-                                                                'Ticker': 'first',
+    dataset = dataset[['Ticker', 'Trade Type', 'Price', 'Qty', 'Value']]
+    dataset = dataset.groupby(by=['Ticker', 'Trade Type']).agg({'Ticker': 'first',
                                                                 'Trade Type': 'first',
                                                                 'Price': 'mean',
                                                                 'Qty': 'sum',

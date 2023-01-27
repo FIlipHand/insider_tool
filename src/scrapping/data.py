@@ -40,5 +40,4 @@ def get_data(url: str) -> pd.DataFrame:
     # # TODO sprawdzenie czy ten ticker na pewno istnieje
     # ticker_info = yf.Ticker(dataframe.iloc[0]['Ticker'])
     # dataframe.name = f'{ticker_info.info["shortName"]} insider trades.'
-
     return dataframe
