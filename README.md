@@ -30,7 +30,7 @@
     - `python insider_tool.py penny-stocks --days-ago 5d --report`
 
 - Save Lockheed Martin's insider trades from a year to a file for later analysis
-    - `python .\insider_tool.py get --ticker LMT -d 1y --save`
+    - `python insider_tool.py get --ticker LMT -d 1y --save`
 
 - Show Elon Musk's insider traders over with value over $10M
-  - `python .\insider_tool.py get --days-ago 1m --insider-name "Musk Elon" --vol-min 10000000 --print`
+  - `python insider_tool.py get --days-ago 1m --insider-name "Musk Elon" --vol-min 10000000 --print`
