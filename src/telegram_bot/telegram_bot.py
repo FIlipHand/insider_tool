@@ -19,7 +19,7 @@ with open('models/xgmodel.h5', 'rb') as file:
 
 
 def send_data(url):
-    global last_day
+    global last_day  # nie da się tego uniknąć?
     dataframe = get_data(url)
     if dataframe.empty:
         return

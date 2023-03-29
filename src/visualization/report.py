@@ -54,10 +54,7 @@ class TickerReport(BaseReport):
 
         colors = []
         for idx, row in self.dataset.iterrows():
-            if row['Trade Type'].startswith('P'):
-                color = 'green'
-            else:
-                color = 'red'
+            color = 'green' if row['Trade Type'].startswith('P') else 'red'
             self.figure.add_shape(go.layout.Shape(type='line'),
                                   xref='x',
                                   yref='y',
