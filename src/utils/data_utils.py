@@ -13,15 +13,7 @@ def change_cell_to_number(value: str) -> int:
     -------
     int: parsed value
     """
-    value = value.replace('$', '')
-    value = value.replace(',', '')
-    if value[0] == '-':
-        value = value.replace('-', '')
-        value = int(value) * -1
-    else:
-        value = value.replace('+', '')
-        value = int(value)
-    return value
+    return int(value.replace('$', '').replace(',', '')) # więcej docstringa niż kodu
 
 
 def process_dataset(dataset: pd.DataFrame):
@@ -65,7 +57,7 @@ def group_dataset(dataset: pd.DataFrame):
     dataset = dataset[['Ticker', 'Trade Type', 'Price', 'Qty', 'Value']]
     dataset = dataset.groupby(by=['Ticker', 'Trade Type']).agg({'Ticker': 'first',
                                                                 'Trade Type': 'first',
-                                                                'Price': 'mean',
+                                                                'Price': 'mean',  # na pewno? nie powinniśmy tego liczyć jako Value/Qty już po zsumowaniu?
                                                                 'Qty': 'sum',
                                                                 'Value': 'sum'})
     return dataset

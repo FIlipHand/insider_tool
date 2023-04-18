@@ -12,7 +12,7 @@ def create_url(ticker: list = None, start_date: datetime.date = None, end_date: 
     if ticker is None:
         ticker = []
     if sh_price_max is None:
-        sh_price_max = ''
+        sh_price_max = ''  # w czym pusty napis jest lepszy od None? plus pusty napis może być wartością domyślną parametru
     if sh_price_min is None:
         sh_price_min = ''
     if days_ago is None:
@@ -24,7 +24,7 @@ def create_url(ticker: list = None, start_date: datetime.date = None, end_date: 
         unit = days_ago[-1]
         days_ago = int(days_ago[:-1]) * units[unit.lower()]
 
-    volume_min = '' if volume_min is None else int(volume_min / 1000)
+    volume_min = '' if volume_min is None else int(volume_min / 1000)  # volume_min jest albo stringiem, albo intem
     volume_max = '' if volume_max is None else int(volume_max / 1000)
     insider_title = [] if insider_title is None else insider_title
 
@@ -45,7 +45,7 @@ def create_url(ticker: list = None, start_date: datetime.date = None, end_date: 
         case [False, True]:
             raise NotImplementedError("You shouldn't be here")
         case [False, False]:
-            pass
+            pass  # ??
 
     # Process insider titles
     title_str = create_insider_title_str(insider_title)
@@ -59,30 +59,31 @@ def create_url(ticker: list = None, start_date: datetime.date = None, end_date: 
 def create_insider_title_str(titles: List[TitleChoice]) -> str:
     final_string = ''
     for title in titles:
-        match title:
-            case TitleChoice.officer:
-                final_string += 'isofficer=1&'
-            case TitleChoice.COB:
-                final_string += 'iscob=1&'
-            case TitleChoice.CEO:
-                final_string += 'isceo=1&'
-            case TitleChoice.Pres:
-                final_string += 'ispres=1&'
-            case TitleChoice.COO:
-                final_string += 'iscoo=1&'
-            case TitleChoice.CFO:
-                final_string += 'iscfo=1&'
-            case TitleChoice.GC:
-                final_string += 'isgc=1&'
-            case TitleChoice.VP:
-                final_string += 'isvp=1&'
-            case TitleChoice.Director:
-                final_string += 'isdirector=1&'
-            case TitleChoice.ten_own:
-                final_string += 'istenpercent=1&'
-            case TitleChoice.other:
-                final_string += 'isother=1&'
-            case _:
-                pass
+        final_string += f'is{title.value}=1&'
+        # match title:
+        #     case TitleChoice.officer:
+        #         final_string += 'isofficer=1&'
+        #     case TitleChoice.COB:
+        #         final_string += 'iscob=1&'
+        #     case TitleChoice.CEO:
+        #         final_string += 'isceo=1&'
+        #     case TitleChoice.Pres:
+        #         final_string += 'ispres=1&'
+        #     case TitleChoice.COO:
+        #         final_string += 'iscoo=1&'
+        #     case TitleChoice.CFO:
+        #         final_string += 'iscfo=1&'
+        #     case TitleChoice.GC:
+        #         final_string += 'isgc=1&'
+        #     case TitleChoice.VP:
+        #         final_string += 'isvp=1&'
+        #     case TitleChoice.Director:
+        #         final_string += 'isdirector=1&'
+        #     case TitleChoice.ten_own:
+        #         final_string += 'istenpercent=1&'
+        #     case TitleChoice.other:
+        #         final_string += 'isother=1&'
+        #     case _:
+        #         pass
 
     return final_string
